@@ -62,20 +62,21 @@ def buscar_por_nit():
         }
 
         resultados = []
+
         for _, fila in df_filtrado.iterrows():
             fila_resultado = OrderedDict()
 
-        # Agregar columnas principales (1 a 6) y la columna 61
-        columnas_principales = list(df.columns[:6])  # columnas 0 a 5
-        if len(df.columns) > 60:
-            columnas_principales.append(df.columns[60])  # columna 61 si existe
-        
-        for col in columnas_principales:
-            fila_resultado[col] = fila[col]
-        
-        # Agrupar dinámicamente: columnas 7 a 60 (índices 6 a 59)
-        columnas_dinamicas = df.columns[6:60]  # 60 no incluido
-        agrupado = {}
+            # Agregar columnas principales (1 a 6) y la columna 61
+            columnas_principales = list(df.columns[:6])  # columnas 0 a 5
+            if len(df.columns) > 60:
+                columnas_principales.append(df.columns[60])  # columna 61 si existe
+
+            for col in columnas_principales:
+                fila_resultado[col] = fila[col]
+
+            # Agrupar dinámicamente: columnas 7 a 60 (índices 6 a 59)
+            columnas_dinamicas = df.columns[6:60]  # columna 60 no incluida
+            agrupado = {}
 
             for col in columnas_dinamicas:
                 valor = fila[col]
@@ -83,12 +84,11 @@ def buscar_por_nit():
                     valor = int(valor)
                     if valor not in agrupado:
                         agrupado[valor] = []
-                    
-                    # 🔥 Aquí limpiamos la "D" del nombre de columna
-                    nombre_limpio = col.lstrip('D')  # elimina la letra D solo si está al principio
+
+                    nombre_limpio = col.lstrip('D')  # ej: "D23" -> "23"
                     agrupado[valor].append(nombre_limpio)
 
-            # Añadir agrupaciones con nombres en lugar de números
+            # Añadir agrupaciones con nombres
             for valor in sorted(agrupado.keys()):
                 nombre = nombres_grupo.get(valor, f"Grupo {valor}")
                 fila_resultado[nombre] = agrupado[valor]
@@ -97,9 +97,6 @@ def buscar_por_nit():
 
         respuesta_json = json.dumps(resultados, ensure_ascii=False, indent=2)
         return app.response_class(respuesta_json, mimetype="application/json")
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
