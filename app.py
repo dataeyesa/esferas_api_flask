@@ -303,17 +303,21 @@ def buscar_por_vendedor():
         if not nombre:
             return jsonify({"error": "Debes proporcionar el nombre del vendedor (nombre)"}), 400
 
-        conn = sqlite3.connect("ventas.db")
-        cursor = conn.cursor()
+        # Separar palabras y construir condiciones dinámicas
+        palabras = nombre.lower().split()
+        condiciones = " AND ".join(["LOWER(Vendedor) LIKE ?" for _ in palabras])
+        parametros = [f"%{palabra}%" for palabra in palabras]
 
-        # Búsqueda parcial, case-insensitive
-        query = """
+        query = f"""
             SELECT DISTINCT Nit, `Razon Social`, Vendedor
             FROM ventas
-            WHERE LOWER(Vendedor) LIKE ?
+            WHERE {condiciones}
             ORDER BY `Razon Social` ASC
         """
-        cursor.execute(query, (f"%{nombre.lower()}%",))
+
+        conn = sqlite3.connect("ventas.db")
+        cursor = conn.cursor()
+        cursor.execute(query, parametros)
         filas = cursor.fetchall()
         conn.close()
 
@@ -327,6 +331,7 @@ def buscar_por_vendedor():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
        
 # Configuración para correr en Render
 if __name__ == "__main__":
