@@ -309,7 +309,7 @@ def buscar_por_vendedor():
         parametros = [f"%{palabra}%" for palabra in palabras]
 
         query = f"""
-            SELECT DISTINCT Nit, `Razon Social`, Vendedor
+            SELECT DISTINCT Nit, `Razon Social`, Vendedor, Cod
             FROM ventas
             WHERE {condiciones}
             ORDER BY `Razon Social` ASC
@@ -325,7 +325,7 @@ def buscar_por_vendedor():
             return jsonify({"mensaje": "No se encontraron coincidencias para ese nombre"}), 404
 
         resultados = [
-            {"Nit": fila[0], "Razon_Social": fila[1], "Vendedor": fila[2]} for fila in filas
+            {"Nit": fila[0], "Razon_Social": fila[1], "Vendedor": fila[2], fila[3]} for fila in filas
         ]
         return jsonify(resultados)
 
