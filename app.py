@@ -296,6 +296,37 @@ def sucursales_por_cod():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/buscar_por_vendedor", methods=["GET"])
+def buscar_por_vendedor():
+    try:
+        nombre = request.args.get("nombre")
+        if not nombre:
+            return jsonify({"error": "Debes proporcionar el nombre del vendedor (nombre)"}), 400
+
+        conn = sqlite3.connect("ventas.db")
+        cursor = conn.cursor()
+
+        # Búsqueda parcial, case-insensitive
+        query = """
+            SELECT DISTINCT Nit, `Razon Social`, Vendedor
+            FROM ventas
+            WHERE LOWER(Vendedor) LIKE ?
+            ORDER BY `Razon Social` ASC
+        """
+        cursor.execute(query, (f"%{nombre.lower()}%",))
+        filas = cursor.fetchall()
+        conn.close()
+
+        if not filas:
+            return jsonify({"mensaje": "No se encontraron coincidencias para ese nombre"}), 404
+
+        resultados = [
+            {"Nit": fila[0], "Razon_Social": fila[1], "Vendedor": fila[2]} for fila in filas
+        ]
+        return jsonify(resultados)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
        
 # Configuración para correr en Render
 if __name__ == "__main__":
