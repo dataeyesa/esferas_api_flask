@@ -65,14 +65,17 @@ def buscar_por_nit():
         for _, fila in df_filtrado.iterrows():
             fila_resultado = OrderedDict()
 
-            # Agregar primero las columnas principales
-            columnas_principales = df.columns[:6]
-            for col in columnas_principales:
-                fila_resultado[col] = fila[col]
-
-            # Agrupar dinámicamente
-            columnas_dinamicas = df.columns[6:]
-            agrupado = {}
+        # Agregar columnas principales (1 a 6) y la columna 61
+        columnas_principales = list(df.columns[:6])  # columnas 0 a 5
+        if len(df.columns) > 60:
+            columnas_principales.append(df.columns[60])  # columna 61 si existe
+        
+        for col in columnas_principales:
+            fila_resultado[col] = fila[col]
+        
+        # Agrupar dinámicamente: columnas 7 a 60 (índices 6 a 59)
+        columnas_dinamicas = df.columns[6:60]  # 60 no incluido
+        agrupado = {}
 
             for col in columnas_dinamicas:
                 valor = fila[col]
