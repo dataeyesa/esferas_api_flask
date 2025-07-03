@@ -213,7 +213,7 @@ def buscar_por_cod():
 
         # Consulta ajustada para asegurar coincidencias exactas
         query = """
-            SELECT DISTINCT Nit, `Razon Social`
+            SELECT DISTINCT Nit, `Razon Social`, Vendedor
             FROM ventas
             WHERE CAST(Cod AS INTEGER) = ?
             ORDER BY `Razon Social` ASC
@@ -227,7 +227,7 @@ def buscar_por_cod():
             return jsonify({"mensaje": "No se encontraron coincidencias para el código proporcionado"}), 404
 
         # Formatear la respuesta
-        resultados = [{"Nit": fila[0], "Razon_Social": fila[1]} for fila in filas]
+        resultados = [{"Nit": fila[0], "Razon_Social": fila[1], "Vendedor": fila[2]} for fila in filas]
 
         return jsonify(resultados)
 
