@@ -157,17 +157,18 @@ def buscar_cliente():
             for fila in filas:
                 fila_resultado = OrderedDict()
 
-                # Datos principales
+                # Datos principales 6 primeras columnas y la ultima 
                 fila_resultado["Cod"] = fila["Cod"]
                 fila_resultado["Nit"] = fila["Nit"]
                 fila_resultado["Razon Social"] = fila["Razon Social"]
                 fila_resultado["Suc"] = fila["Suc"]
                 fila_resultado["Vendedor"] = fila["Vendedor"]
                 fila_resultado["year"] = fila["year"]
+                fila_resultado["display_name"] = fila["display_name"]
 
                 # Agrupar columnas dinámicas
                 agrupado = {}
-                columnas_dinamicas = fila.keys()[6:]  # desde la séptima en adelante
+                columnas_dinamicas = fila.keys()[6:60]  # desde la séptima hasta la 60
                 for col in columnas_dinamicas:
                     valor = fila[col]
                     if pd.notnull(valor):
